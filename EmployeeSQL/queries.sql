@@ -21,10 +21,20 @@ where dept_no in
 select dep.emp_no, dep.first_name, dep.last_name, dm.dept_no, d.dept_name from Department_Managers as dep
 inner join dept_manager as dm on
 dep.emp_no = dm.emp_no
+
+
+--List the department of each employee with the following information: employee number, last name, first name, and department name.
+create table emp_dept as
+select e.emp_no, e.last_name, e.first_name, dm.dept_no, d.dept_name from employees as e
+inner join dept_manager as dm on
+e.emp_no = dm.emp_no
 inner join departments as d on
 dm.dept_no = d.dept_no
 
---List the department of each employee with the following information: employee number, last name, first name, and department name.
+alter table emp_dept
+drop column dept_no
+
+select * from emp_dept
 
 
 --List first name, last name, and sex for employees whose first name is "Hercules" and last names begin with "B."
@@ -33,6 +43,8 @@ where first_name = 'Hercules' and
 last_name like 'B%'
 
 --List all employees in the Sales department, including their employee number, last name, first name, and department name.
+
+create table sales_emp as 
 select emp_no, last_name, first_name from employees
 where emp_no in
 (select emp_no from dept_emp
@@ -40,15 +52,30 @@ where dept_no in
 (select dept_no from departments
 where dept_name = 'Sales'))
 
+alter table sales_emp
+add column dept_name varchar;
+
+update sales_emp
+set dept_name = 'Sales'
 
 --List all employees in the Sales and Development departments, including their employee number, last name, first name, and department name.
+create table development as
 select emp_no, last_name, first_name from employees
 where emp_no in
 (select emp_no from dept_emp
 where dept_no in
 (select dept_no from departments
-where dept_name = 'Sales' or dept_name = 'Development')
+where dept_name = 'Development')
 )
+
+alter table development
+add column dept_name varchar;
+update development
+set dept_name = 'Development'
+
+select * from sales_emp
+union
+select * from development
 
 --In descending order, list the frequency count of employee last names, i.e., how many employees share each last name.
 select last_name, count(last_name) as "Count of Last Name" from employees
